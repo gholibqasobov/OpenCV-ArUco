@@ -60,8 +60,9 @@ def aruco_display(corners, ids, rejected, image):
                 rect_corners = np.array([marker_positions[0][2], marker_positions[1][3],
                                          marker_positions[2][0], marker_positions[3][1]], np.int32)
                 rect_corners = rect_corners.reshape((-1, 1, 2))
-                print('rect corners: ', rect_corners)
-                cv2.polylines(image, [rect_corners], isClosed=True, color=(0, 255, 0), thickness=2)
+                # rgb = (137, 207, 240, 200)
+                # print('rect corners: ', rect_corners)
+                cv2.polylines(image, [rect_corners], isClosed=True, color=(240, 207, 137), thickness=2)
 
     return image
 
