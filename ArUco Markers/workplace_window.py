@@ -26,6 +26,13 @@ ARUCO_DICT = {
     "DICT_APRILTAG_36h11": cv2.aruco.DICT_APRILTAG_36h11
 }
 
+def rescaleFrame(frame, scale=0.75):
+    # Images, Videos and Live Video
+    width = int(frame.shape[1] * scale)
+    height = int(frame.shape[0] * scale)
+    dimensions = (width, height)
+    return cv2.resize(frame, dimensions, interpolation=cv2.INTER_CUBIC)
+
 
 def aruco_display(corners, ids, rejected, image):
     if len(corners) > 0:
@@ -57,33 +64,49 @@ def aruco_display(corners, ids, rejected, image):
             print("[Inference] ArUco marker ID: {}".format(markerID))
 
             if set([0, 1, 2, 3]).issubset(marker_positions.keys()):
-                rect_coordinates = np.array([marker_positions[0], marker_positions[1],
-                                             marker_positions[2], marker_positions[3]], np.float32)
-                rect_coordinates = rect_coordinates.reshape((-1, 1, 2))
-                # print('rectangle coordinates', rect_coordinates)
+                # rect_coordinates = np.array([marker_positions[0], marker_positions[1],
+                #                              marker_positions[2], marker_positions[3]], np.float32)
+                # rect_coordinates = rect_coordinates.reshape((-1, 1, 2))
+
                 rect_corners = np.array([marker_positions[0][2], marker_positions[1][3],
-                                         marker_positions[2][0], marker_positions[3][1]], np.float32)
+                                         marker_positions[2][0], marker_positions[3][1]], np.int32)
                 rect_corners = rect_corners.reshape((-1, 1, 2))
 
-                # print('rect corners: ', rect_corners)
-                cv2.polylines(image, [rect_corners], isClosed=True, color=(0, 255, 0), thickness=2)
+                """workplace frame"""
+                print('rect corners: ', rect_corners)
+                # print('rect coords:', rect_coordinates)
+                print('marker pos1', marker_positions[0][2])
+                print('marker pos2', marker_positions[3][1])
+                # print('marker pos-x1', marker_positions[0][2][0])
+                # print('marker pos-
 
-                """Open the detected area in a new window"""
-                # we must detect the longest height and width and open the window of these parameters
-                """
-                bottom right = marker_positions[0][2][1] # the y coordinates
-                
-                
-                
-                height = (top left - bottom left) if max((top left - bottom left),(top right - bottom right)) ==
-                 (top left - bottom left) else (top right - bottom right)
-                width = (top right - top left) if max((top right - top left), (bottom right - bottom left ) == 
-                (top left - top right) else (bottom right - bottom left)  
-                """
-                # we must open the window from the given points
-                """
-                
-                """
+                # horizontal start point
+                x = int(max(marker_positions[0][2][0], marker_positions[3][1][0]))
+                print('max x', x)
+
+                # width
+                l1 = abs(marker_positions[1][3][0] - marker_positions[0][2][0])
+                l2 = abs(marker_positions[2][0][0] - marker_positions[3][1][0])
+                workplace_frame_w = int(min(l1, l2))
+                print(workplace_frame_w)
+
+
+                # vectical start point
+                y = int(max(marker_positions[0][2][1], marker_positions[1][3][1]))
+                print('y', y)
+
+                # height of the frame
+                h1 = abs(marker_positions[3][1][1] - marker_positions[0][2][1])
+                h2 = abs(marker_positions[2][0][1] - marker_positions[1][3][1])
+                workplace_frame_h = int(min(h1, h2))
+                print(workplace_frame_h)
+
+                # create the frame
+                if workplace_frame_h is not None and workplace_frame_w is not None:
+                    wokrplace_frame = img[y:y+workplace_frame_h, x:x+workplace_frame_w]
+                    cv2.imshow('workplace', rescaleFrame(wokrplace_frame, 5))
+                    # cv2.imshow('workplace', wokrplace_frame)
+                cv2.polylines(image, [rect_corners], isClosed=True, color=(240, 207, 137), thickness=2)
 
     return image
 
@@ -116,7 +139,6 @@ while cap.isOpened():
     detected_markers = aruco_display(corners, ids, rejected, img)
 
     cv2.imshow("Detected Rectangle", img)
-    # cv2.imshow("Workplace Area", detected_markers)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
