@@ -77,7 +77,8 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[aruco_type])
 
 parameters = cv2.aruco.DetectorParameters()
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('http://192.168.252.22:8080/video')
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)

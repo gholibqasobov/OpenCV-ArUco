@@ -47,8 +47,8 @@ def aruco_display(corners, ids, rejected, image):
 
             cv2.putText(image, str(markerID), (topLeft[0], topLeft[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0),
                         thickness=2)
-            # cv.putText(img, 'Hello', (255, 255), cv.FONT_HERSHEY_SCRIPT_SIMPLEX, 1.0, (255, 0, 0), thickness=2)
             print("[Inference] ArUco marker ID: {}".format(markerID))
+            print("[Position]", (cX, cY))
 
     return image
 
